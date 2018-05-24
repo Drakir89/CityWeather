@@ -34,12 +34,12 @@ public class OpenWeatherMapApi {
     }
 
     private JSONObject requestJsonWithHttp(String restRequest){
-        HttpResponse httpResponse = executeHttpRequest(restRequest);
+        HttpResponse httpResponse = executeHttpGetRequest(restRequest);
         String responseString = httpResponseToString(httpResponse);
         return new JSONObject(responseString);
     }
 
-    private HttpResponse executeHttpRequest(String restRequest){
+    private HttpResponse executeHttpGetRequest(String restRequest){
         HttpResponse httpResponse = null;
         try {
         HttpGet httpRequest = new HttpGet(restRequest);
