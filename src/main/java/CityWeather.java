@@ -2,6 +2,8 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
+//this class holds and interprets data for the weather in a single city
+//TODO: Currently class explodes if the JSON object doens't fit. plz fix
 public class CityWeather {
     private BigDecimal longitude;
     private BigDecimal latitude;
@@ -16,7 +18,7 @@ public class CityWeather {
     private String cityName;
     private int cityId;
 
-    public CityWeather(JSONObject jsonSource){
+    CityWeather(JSONObject jsonSource){
         longitude = jsonSource.getJSONObject("coord").getBigDecimal("lon");
         latitude = jsonSource.getJSONObject("coord").getBigDecimal("lat");
         //I have no idea why the next json data is in an array of one, but that's what the api gives you
@@ -31,7 +33,6 @@ public class CityWeather {
         cityName = jsonSource.getString("name");
         cityId = jsonSource.getInt("id");
     }
-
 
     public BigDecimal getLongitude() {
         return longitude;
