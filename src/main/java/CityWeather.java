@@ -1,3 +1,4 @@
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -28,7 +29,9 @@ public class CityWeather {
         humidity = jsonSource.getJSONObject("main").getInt("humidity");
         visibility = jsonSource.getInt("visibility");
         windSpeed = jsonSource.getJSONObject("wind").getBigDecimal("speed");
-        windDirectionAsDegrees = jsonSource.getJSONObject("wind").getInt("deg");
+        try{ //sometimes wind direction isn't included in the response. When it's not it will be shown as "0"
+            windDirectionAsDegrees = jsonSource.getJSONObject("wind").getInt("deg");
+        } catch (JSONException ignored){}
         countryCode = jsonSource.getJSONObject("sys").getString("country");
         cityName = jsonSource.getString("name");
         cityId = jsonSource.getInt("id");
@@ -59,7 +62,10 @@ public class CityWeather {
     }
 
     public BigDecimal getFahrenheit(){
-        return temperature.multiply(new BigDecimal("1.8").subtract(new BigDecimal("459.67")));
+        BigDecimal fahrenheit = temperature.multiply(new BigDecimal("1.8"));
+        fahrenheit = fahrenheit.subtract(new BigDecimal("459.67"));
+        fahrenheit = fahrenheit.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return fahrenheit;
     }
 
     public int getPressure() {
