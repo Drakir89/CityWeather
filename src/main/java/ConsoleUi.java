@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 //this class handles interaction with the user
-public class ConsoleUi {
+class ConsoleUi {
     private OpenWeatherMapApi owmApi;
     private CityWeather cityWeather = null;
 
@@ -20,11 +20,11 @@ public class ConsoleUi {
 
     private boolean returnToMenu = true;
 
-    public ConsoleUi(OpenWeatherMapApi givenOwmApi) {
+    ConsoleUi(OpenWeatherMapApi givenOwmApi) {
         owmApi = givenOwmApi;
     }
 
-    public void begin(){
+    void begin(){
         System.out.println("Welcome to my weather app!");
         while (returnToMenu){
             displayMenu();
@@ -55,15 +55,22 @@ public class ConsoleUi {
     }
 
     private void displayPickCityMenu(){
-        System.out.println("1: enter city name"); //TODO: change response depending on the city search method
+        System.out.println("1: choose a city");
         System.out.println("2: change search method");
         System.out.println("e: exit");
         String input = getUserInput();
         switch (input){
             case "1":
-                searchCity();
-                displayCityOverview();
-                nextMenu = Menu.CITY_DETAILS;
+                String httpResponse = getCityFromApi();
+                int statusCode = owmApi.getLatestStatusCode();
+                if(statusCode == 200) {
+                    cityWeather = new CityWeather(httpResponse);
+                    displayCityOverview();
+                    nextMenu = Menu.CITY_DETAILS;
+                }
+                else {
+                    System.out.println("City search failed. Http status code: " + statusCode);
+                }
                 break;
             case "2":
                 changeCitySearchMethod();
@@ -76,27 +83,29 @@ public class ConsoleUi {
         }
     }
 
-    private void searchCity(){
+    private String getCityFromApi(){
         String input;
+        String httpResponse = "";
         switch (citySearchMethod){
             case NAME:
                 System.out.println("Please enter the city name:");
                 input = getUserInput();
-                cityWeather = owmApi.getWeatherByCityName(input);
+                httpResponse = owmApi.searchCityByName(input);
                 break;
             case NAME_AND_COUNTRY:
                 System.out.println("Please enter the city name and country code. Example: london,uk");
                 input = getUserInput();
-                cityWeather = owmApi.getWeatherByCityNameAndCountry(input);
+                httpResponse = owmApi.searchCityByNameAndCountry(input);
                 break;
             case ID:
                 System.out.println("Please enter the city ID number:");
                 input = getUserInput();
-                cityWeather = owmApi.getWeatherById(input);
+                httpResponse = owmApi.searchCityById(input);
                 break;
             default:
                 System.out.println("No searchMethod set");
         }
+        return httpResponse;
     }
 
     private void rejectInput(){
@@ -164,7 +173,11 @@ public class ConsoleUi {
                 displayCityData();
                 break;
             case "4":
+                changeTemperatureUnit();
+                break;
+            case "5":
                 nextMenu = Menu.PICK_CITY;
+                break;
             case "e":
                 returnToMenu = false;
         }
@@ -195,5 +208,28 @@ public class ConsoleUi {
         System.out.println("longitude: " + cityWeather.getLongitude());
         System.out.println("latitude: " + cityWeather.getLatitude());
         System.out.println("--------------------------------");
+    }
+
+    private void changeTemperatureUnit(){
+        System.out.println("1: Celsius");
+        System.out.println("2: Fahrenheit");
+        System.out.println("3: Kelvin");
+        String input = getUserInput();
+        switch (input){
+            case "1":
+                temperatureUnit = TemperatureUnit.CELSIUS;
+                System.out.println("Temperature will be shown as Celsius");
+                break;
+            case "2":
+                temperatureUnit = TemperatureUnit.FAHRENHEIT;
+                System.out.println("Temperature will be shown as Fahrenheit");
+                break;
+            case "3":
+                temperatureUnit = TemperatureUnit.KELVIN;
+                System.out.println("Temperature will be shown as Kelvin");
+                break;
+            default:
+                rejectInput();
+        }
     }
 }

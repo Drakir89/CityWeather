@@ -19,7 +19,8 @@ class CityWeather {
     private String cityName;
     private int cityId;
 
-    CityWeather(JSONObject jsonSource){
+    CityWeather(String apiResponse){
+        JSONObject jsonSource = new JSONObject(apiResponse);
         longitude = jsonSource.getJSONObject("coord").getBigDecimal("lon");
         latitude = jsonSource.getJSONObject("coord").getBigDecimal("lat");
         //I have no idea why the next json data is in an array of one, but that's what the api gives you
