@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 //this class holds and interprets data for the weather in a single city
 //TODO: Currently class explodes if the JSON object doesn't fit. plz fix
-public class CityWeather {
+class CityWeather {
     private BigDecimal longitude;
     private BigDecimal latitude;
     private String weatherDescription;
@@ -37,66 +37,66 @@ public class CityWeather {
         cityId = jsonSource.getInt("id");
     }
 
-    public BigDecimal getLongitude() {
+    BigDecimal getLongitude() {
         return longitude;
     }
 
-    public BigDecimal getLatitude() {
+    BigDecimal getLatitude() {
         return latitude;
     }
 
-    public String getWeatherDescription() {
+    String getWeatherDescription() {
         return weatherDescription;
     }
 
-    public BigDecimal getTemperature() {
+    BigDecimal getTemperature() {
         return temperature;
     }
 
-    public BigDecimal getKelvin() {
+    BigDecimal getKelvin() {
         return temperature;
     }
 
-    public BigDecimal getCelsius() {
+    BigDecimal getCelsius() {
         return temperature.subtract(new BigDecimal("273.15"));
     }
 
-    public BigDecimal getFahrenheit(){
+    BigDecimal getFahrenheit(){
         BigDecimal fahrenheit = temperature.multiply(new BigDecimal("1.8"));
         fahrenheit = fahrenheit.subtract(new BigDecimal("459.67"));
         fahrenheit = fahrenheit.setScale(2, BigDecimal.ROUND_HALF_UP);
         return fahrenheit;
     }
 
-    public int getPressure() {
+    int getPressure() {
         return pressure;
     }
 
-    public int getHumidity() {
+    int getHumidity() {
         return humidity;
     }
 
-    public int getVisibility() {
+    int getVisibility() {
         return visibility;
     }
 
-    public BigDecimal getWindSpeed() {
+    BigDecimal getWindSpeed() {
         return windSpeed;
     }
 
-    public int getWindDirectionAsDegrees() {
+    int getWindDirectionAsDegrees() {
         return windDirectionAsDegrees;
     }
 
-    public String getCountryCode() {
+    String getCountryCode() {
         return countryCode;
     }
 
-    public String getCityName() {
+    String getCityName() {
         return cityName;
     }
 
-    public int getCityId() {
+    int getCityId() {
         return cityId;
     }
 }
