@@ -77,18 +77,21 @@ public class ConsoleUi {
     }
 
     private void searchCity(){
-        String input = getUserInput();
+        String input;
         switch (citySearchMethod){
             case NAME:
                 System.out.println("Please enter the city name:");
+                input = getUserInput();
                 cityWeather = owmApi.getWeatherByCityName(input);
                 break;
             case NAME_AND_COUNTRY:
-                System.out.println("Please enter the city name and country code. Example: london, uk");
-                //TODO: split string into two strings, "london" and "uk", then run the owmApi.getWeatherByCityNameAndCountry() method
+                System.out.println("Please enter the city name and country code. Example: london,uk");
+                input = getUserInput();
+                cityWeather = owmApi.getWeatherByCityNameAndCountry(input);
                 break;
             case ID:
                 System.out.println("Please enter the city ID number:");
+                input = getUserInput();
                 cityWeather = owmApi.getWeatherById(input);
                 break;
             default:
@@ -103,7 +106,7 @@ public class ConsoleUi {
     private void changeCitySearchMethod() {
         System.out.println("how should we find the city?");
         System.out.println("1: by city name, eg \"london\"");
-        System.out.println("2: by name and country code, eg \"london, uk\"");
+        System.out.println("2: by name and country code, eg \"london,uk\"");
         System.out.println("3: by OpenWeatherMap ID, eg \"2643743\"");
 
         String input = getUserInput();
@@ -161,7 +164,9 @@ public class ConsoleUi {
                 displayCityData();
                 break;
             case "4":
-                //TODO: finish this method
+                nextMenu = Menu.PICK_CITY;
+            case "e":
+                returnToMenu = false;
         }
     }
 

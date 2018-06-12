@@ -3,7 +3,7 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 
 //this class holds and interprets data for the weather in a single city
-//TODO: Currently class explodes if the JSON object doens't fit. plz fix
+//TODO: Currently class explodes if the JSON object doesn't fit. plz fix
 public class CityWeather {
     private BigDecimal longitude;
     private BigDecimal latitude;

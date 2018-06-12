@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 //Represents the external API to the other classes. Primary use is to return CityWeather objects
-public class OpenWeatherMapApi {
+class OpenWeatherMapApi {
     private HttpClient httpClient = HttpClientBuilder.create().build();
     private String apiAddress;
     private String appId;
@@ -19,18 +19,22 @@ public class OpenWeatherMapApi {
         this.appId = appId;
 }
 
-    public CityWeather getWeatherById(String id){
-        return null;
+    CityWeather getWeatherById(String id){
+        String restRequest = apiAddress + "weather?id=" + id + "&APPID=" + appId;
+        JSONObject responseAsJson = requestJsonWithHttp(restRequest);
+        return new CityWeather(responseAsJson);
     }
 
-    public CityWeather getWeatherByCityName (String name){
+    CityWeather getWeatherByCityName (String name){
         String restRequest = apiAddress + "weather?q=" + name + "&APPID=" + appId;
         JSONObject responseAsJson = requestJsonWithHttp(restRequest);
         return new CityWeather(responseAsJson);
     }
 
-    public CityWeather getWeatherByCityNameAndCountry (String name, String countryCode){
-        return null;
+    CityWeather getWeatherByCityNameAndCountry (String nameAndCountry){
+        String restRequest = apiAddress + "weather?q=" + nameAndCountry + "&APPID=" + appId;
+        JSONObject responseAsJson = requestJsonWithHttp(restRequest);
+        return new CityWeather(responseAsJson);
     }
 
     private JSONObject requestJsonWithHttp(String restRequest){
@@ -54,7 +58,7 @@ public class OpenWeatherMapApi {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
