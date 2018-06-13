@@ -35,6 +35,7 @@ class OpenWeatherMapApi {
     }
 
     private String requestStringWithHttp(String restRequest){
+        restRequest = restRequest.replaceAll("\\s", "%20"); //replace whitespaces with URI escape characters for SPACE
         HttpResponse httpResponse = executeHttpGetRequest(restRequest);
         return httpResponseToString(httpResponse);
     }

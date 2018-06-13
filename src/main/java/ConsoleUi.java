@@ -24,7 +24,7 @@ class ConsoleUi {
         owmApi = givenOwmApi;
     }
 
-    void begin(){
+    void run(){
         System.out.println("Welcome to my weather app!");
         while (returnToMenu){
             displayMenu();
@@ -38,7 +38,7 @@ class ConsoleUi {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return input;
+        return input.trim().toLowerCase();
     }
 
     private void displayMenu(){
@@ -61,16 +61,8 @@ class ConsoleUi {
         String input = getUserInput();
         switch (input){
             case "1":
-                String httpResponse = getCityFromApi();
-                int statusCode = owmApi.getLatestStatusCode();
-                if(statusCode == 200) {
-                    cityWeather = new CityWeather(httpResponse);
-                    displayCityOverview();
-                    nextMenu = Menu.CITY_DETAILS;
-                }
-                else {
-                    System.out.println("City search failed. Http status code: " + statusCode);
-                }
+                searchCity();
+                //if new city is successfully found, user will be sent to displayCityDetailsMenu
                 break;
             case "2":
                 changeCitySearchMethod();
@@ -83,7 +75,7 @@ class ConsoleUi {
         }
     }
 
-    private String getCityFromApi(){
+    private void searchCity(){
         String input;
         String httpResponse = "";
         switch (citySearchMethod){
@@ -105,7 +97,15 @@ class ConsoleUi {
             default:
                 System.out.println("No searchMethod set");
         }
-        return httpResponse;
+        int statusCode = owmApi.getLatestStatusCode();
+        if(statusCode == 200) {
+            cityWeather = new CityWeather(httpResponse);
+            displayCityOverview();
+            nextMenu = Menu.CITY_DETAILS;
+        }
+        else {
+            System.out.println("City search failed. Http status code: " + statusCode);
+        }
     }
 
     private void rejectInput(){
@@ -180,6 +180,9 @@ class ConsoleUi {
                 break;
             case "e":
                 returnToMenu = false;
+                break;
+            default:
+                rejectInput();
         }
     }
 
