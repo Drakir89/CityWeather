@@ -4,101 +4,186 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 
 //this class holds and interprets data for the weather in a single city
-//TODO: Currently class explodes if the JSON object doesn't fit. plz fix
 class CityWeather {
+    private final String UNAVAILABLE = "unavailable";
+
     private BigDecimal longitude;
+    private boolean longitudeFound = false;
     private BigDecimal latitude;
+    private boolean latitudeFound = false;
     private String weatherDescription;
+    private boolean weatherDescriptionFound = false;
     private BigDecimal temperature;
+    private boolean temperatureFound = false;
     private int pressure;
+    private boolean pressureFound = false;
     private int humidity;
+    private boolean humidityFound = false;
     private int visibility;
+    private boolean visibilityFound = false;
     private BigDecimal windSpeed;
+    private boolean windSpeedFound = false;
     private int windDirectionAsDegrees;
+    private boolean windDirectionAsDegreesFound = false;
     private String countryCode;
+    private boolean countryCodeFound = false;
     private String cityName;
+    private boolean cityNameFound = false;
     private int cityId;
+    private boolean cityIdFound = false;
 
     CityWeather(String apiResponse){
         JSONObject jsonSource = new JSONObject(apiResponse);
-        longitude = jsonSource.getJSONObject("coord").getBigDecimal("lon");
-        latitude = jsonSource.getJSONObject("coord").getBigDecimal("lat");
+
+        //there is an example of the expected JSON object at the bottom of the class
+        final String JSON_COORD_KEY = "coord";
+        final String JSON_LON_KEY = "lon";
+        final String JSON_LAT_KEY = "lat";
+        final String JSON_WEATHER_KEY = "weather";
+        final String JSON_DESCRIPTION_KEY = "description";
+        final String JSON_MAIN_KEY = "main";
+        final String JSON_TEMP_KEY = "temp";
+        final String JSON_PRESSURE_KEY = "pressure";
+        final String JSON_HUMIDITY_KEY = "humidity";
+        final String JSON_VISIBILITY_KEY = "visibility";
+        final String JSON_WIND_KEY = "wind";
+        final String JSON_SPEED_KEY = "speed";
+        final String JSON_DEG_KEY = "deg";
+        final String JSON_SYS_KEY = "sys";
+        final String JSON_COUNTRY_KEY = "country";
+        final String JSON_NAME_KEY = "name";
+        final String JSON_ID_KEY = "id";
+
+        if (jsonSource.has(JSON_COORD_KEY)) {
+            if (jsonSource.getJSONObject(JSON_COORD_KEY).has(JSON_LON_KEY)) {
+                longitude = jsonSource.getJSONObject(JSON_COORD_KEY).getBigDecimal(JSON_LON_KEY);
+                longitudeFound = true;
+            }
+            if (jsonSource.getJSONObject(JSON_COORD_KEY).has(JSON_LAT_KEY)){
+                latitude = jsonSource.getJSONObject(JSON_COORD_KEY).getBigDecimal(JSON_LAT_KEY);
+                latitudeFound = true;
+            }
+        }
         //I have no idea why the next json data is in an array of one, but that's what the api gives you
-        weatherDescription = jsonSource.getJSONArray("weather").getJSONObject(0).getString("description");
-        temperature = jsonSource.getJSONObject("main").getBigDecimal("temp");
-        pressure = jsonSource.getJSONObject("main").getInt("pressure");
-        humidity = jsonSource.getJSONObject("main").getInt("humidity");
-        visibility = jsonSource.getInt("visibility");
-        windSpeed = jsonSource.getJSONObject("wind").getBigDecimal("speed");
-        try{ //sometimes wind direction isn't included in the response. When it's not it will be shown as "0"
-            windDirectionAsDegrees = jsonSource.getJSONObject("wind").getInt("deg");
-        } catch (JSONException ignored){}
-        countryCode = jsonSource.getJSONObject("sys").getString("country");
-        cityName = jsonSource.getString("name");
-        cityId = jsonSource.getInt("id");
+        if (jsonSource.has(JSON_WEATHER_KEY)) {
+            if (!jsonSource.getJSONArray(JSON_WEATHER_KEY).isNull(0)){
+                if(jsonSource.getJSONArray(JSON_WEATHER_KEY).getJSONObject(0).has(JSON_DESCRIPTION_KEY)) {
+                    weatherDescription = jsonSource.getJSONArray(JSON_WEATHER_KEY).getJSONObject(0).getString(JSON_DESCRIPTION_KEY);
+                    weatherDescriptionFound = true;
+                }
+            }
+        }
+        if (jsonSource.has(JSON_MAIN_KEY)) {
+            if (jsonSource.getJSONObject(JSON_MAIN_KEY).has(JSON_TEMP_KEY)) {
+                temperature = jsonSource.getJSONObject(JSON_MAIN_KEY).getBigDecimal(JSON_TEMP_KEY);
+                temperatureFound = true;
+            }
+            if (jsonSource.getJSONObject(JSON_MAIN_KEY).has(JSON_PRESSURE_KEY)) {
+                pressure = jsonSource.getJSONObject(JSON_MAIN_KEY).getInt(JSON_PRESSURE_KEY);
+                pressureFound = true;
+            }
+            if (jsonSource.getJSONObject(JSON_MAIN_KEY).has(JSON_HUMIDITY_KEY)) {
+                humidity = jsonSource.getJSONObject(JSON_MAIN_KEY).getInt(JSON_HUMIDITY_KEY);
+                humidityFound = true;
+            }
+        }
+        if (jsonSource.has(JSON_VISIBILITY_KEY)) {
+            visibility = jsonSource.getInt(JSON_VISIBILITY_KEY);
+            visibilityFound = true;
+        }
+        if (jsonSource.has(JSON_WIND_KEY)) {
+            if (jsonSource.getJSONObject(JSON_WIND_KEY).has(JSON_SPEED_KEY)) {
+                windSpeed = jsonSource.getJSONObject(JSON_WIND_KEY).getBigDecimal(JSON_SPEED_KEY);
+                windSpeedFound = true;
+            }
+            if (jsonSource.getJSONObject(JSON_WIND_KEY).has(JSON_DEG_KEY))
+                windDirectionAsDegrees = jsonSource.getJSONObject(JSON_WIND_KEY).getInt(JSON_DEG_KEY);
+                windDirectionAsDegreesFound = true;
+        }
+        if (jsonSource.has(JSON_SYS_KEY)) {
+            if (jsonSource.getJSONObject(JSON_SYS_KEY).has(JSON_COUNTRY_KEY)) {
+                countryCode = jsonSource.getJSONObject(JSON_SYS_KEY).getString(JSON_COUNTRY_KEY);
+                countryCodeFound = true;
+            }
+        }
+        if (jsonSource.has(JSON_NAME_KEY)) {
+            cityName = jsonSource.getString(JSON_NAME_KEY);
+            cityNameFound = true;
+        }
+        if (jsonSource.has(JSON_ID_KEY)) {
+            cityId = jsonSource.getInt(JSON_ID_KEY);
+            cityIdFound = true;
+        }
     }
 
-    BigDecimal getLongitude() {
-        return longitude;
+    String getLongitude() {
+        return (longitudeFound ? longitude.toString() : UNAVAILABLE);
     }
 
-    BigDecimal getLatitude() {
-        return latitude;
+    String getLatitude() {
+        return (latitudeFound ? latitude.toString() : UNAVAILABLE);
     }
 
     String getWeatherDescription() {
-        return weatherDescription;
+        return (weatherDescriptionFound ? weatherDescription : UNAVAILABLE);
     }
 
-    BigDecimal getTemperature() {
-        return temperature;
+    String getKelvin() {
+        return (temperatureFound ? temperature.toString() : UNAVAILABLE);
     }
 
-    BigDecimal getKelvin() {
-        return temperature;
+    String getCelsius() {
+        String response;
+        if (temperatureFound) {
+            BigDecimal celsius = temperature.subtract(new BigDecimal("273.15"));
+            response = celsius.toString();
+        } else
+            response = UNAVAILABLE;
+        return response;
     }
 
-    BigDecimal getCelsius() {
-        return temperature.subtract(new BigDecimal("273.15"));
+    String getFahrenheit(){
+        String response;
+        if (temperatureFound) {
+            BigDecimal fahrenheit = temperature.multiply(new BigDecimal("1.8"));
+            fahrenheit = fahrenheit.subtract(new BigDecimal("459.67"));
+            fahrenheit = fahrenheit.setScale(2, BigDecimal.ROUND_HALF_UP);
+            response = fahrenheit.toString();
+        } else
+            response = UNAVAILABLE;
+        return (response);
     }
 
-    BigDecimal getFahrenheit(){
-        BigDecimal fahrenheit = temperature.multiply(new BigDecimal("1.8"));
-        fahrenheit = fahrenheit.subtract(new BigDecimal("459.67"));
-        fahrenheit = fahrenheit.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return fahrenheit;
+    String getPressure() {
+        return (pressureFound ? String.valueOf(pressure) : UNAVAILABLE);
     }
 
-    int getPressure() {
-        return pressure;
+    String getHumidity() {
+        return (humidityFound ? String.valueOf(humidity) : UNAVAILABLE);
     }
 
-    int getHumidity() {
-        return humidity;
+    String getVisibility() {
+        return (visibilityFound ? String.valueOf(visibility) : UNAVAILABLE);
     }
 
-    int getVisibility() {
-        return visibility;
+    String getWindSpeed() {
+        return (windSpeedFound ? windSpeed.toString() : UNAVAILABLE);
     }
 
-    BigDecimal getWindSpeed() {
-        return windSpeed;
-    }
-
-    int getWindDirectionAsDegrees() {
-        return windDirectionAsDegrees;
+    String getWindDirectionAsDegrees() {
+        return (windDirectionAsDegreesFound ? String.valueOf(windDirectionAsDegrees) : UNAVAILABLE);
     }
 
     String getCountryCode() {
-        return countryCode;
+        return (countryCodeFound ? countryCode : UNAVAILABLE);
     }
 
     String getCityName() {
-        return cityName;
+        return (cityNameFound ? cityName : UNAVAILABLE);
     }
 
-    int getCityId() {
-        return cityId;
+    String getCityId() {
+        return (cityIdFound ? String.valueOf(cityId) : UNAVAILABLE);
     }
 }
 
