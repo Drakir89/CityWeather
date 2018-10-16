@@ -1,0 +1,54 @@
+﻿Rikard’s weather app - krav
+
+Som användare
+* vill jag kunna se vädret i vilken stad som helst, för att stilla min nyfikenhet
+   * jag vill förstå hur jag anger vilken stad
+   * jag vill kunna se en slumpad stad
+   * vädret som används är det som ges av OpenWeatherMaps API
+* vill jag få informationen om vädret grupperat på ett intuitivt sätt, så att appen är lättare att använda
+   * jag vill bara se den mest relevanta informationen först, och sedan fråga efter mer information genom att ställa frågor
+   * jag vill se vilka frågor jag kan ställa
+   * jag vill kunna se temperaturen i fahrenheit
+
+Som utvecklare
+* vill jag att koden är lätt att förstå, så att det är lätt att göra ändringar
+* vill jag att de viktigaste klasserna har ett flexibelt API, så att jag kan återanvända klasserna i ett annat sammanhang
+
+
+
+Exempelflöde:
+Aktör		|	Handling
+----------------------------------------------------------------------------------------------------
+appen		|	visar hur man anger stad
+användaren	|	anger vilken stad att se vädret i
+appen		|	ber om data från OpenWeatherMaps API, i staden som efterfrågats
+OWMs API	|	svarar med data om vädret
+appen		|	presenterar ett urval av datat för användaren
+appen		|	visar hur användaren kan be om mer information om vädret
+användaren	|	anger vilken extra information som hen vill se
+appen		|	visar efterfrågad information
+användaren	|	anger ny stad att se väder i
+appen		|	hämtar data för stad, från nu är det den staden som den svarar på frågor om
+
+
+
+Example input/output:
+
+Welcome to my weather app!
+1: enter city name
+2: change input method
+e: exit
+>1
+Please enter the city name:
+>London
+----------------------------
+City: London
+Clear sky
+27 degrees Celsius
+----------------------------
+1: see weather conditions
+2: see city data
+3: change default temperature unit
+4: change city
+e: exit
+>
