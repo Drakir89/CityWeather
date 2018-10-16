@@ -5,6 +5,6 @@ public class Main {
                 "http://api.openweathermap.org/data/2.5/",
                 "4fa886596b9dfea3b5144b3dd2acda6d");
         ConsoleUi consoleUi = new ConsoleUi(openWeatherMapApi);
-        consoleUi.begin();
+        consoleUi.run();
     }
 }

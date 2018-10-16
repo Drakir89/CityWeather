@@ -2,7 +2,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,34 +12,32 @@ class OpenWeatherMapApi {
     private HttpClient httpClient = HttpClientBuilder.create().build();
     private String apiAddress;
     private String appId;
+    private int latestStatusCode;
 
-    public OpenWeatherMapApi (String apiAddress, String appId){
+    OpenWeatherMapApi (String apiAddress, String appId){
         this.apiAddress = apiAddress;
         this.appId = appId;
 }
 
-    CityWeather getWeatherById(String id){
+    String searchCityById(String id){
         String restRequest = apiAddress + "weather?id=" + id + "&APPID=" + appId;
-        JSONObject responseAsJson = requestJsonWithHttp(restRequest);
-        return new CityWeather(responseAsJson);
+        return requestStringWithHttp(restRequest);
     }
 
-    CityWeather getWeatherByCityName (String name){
+    String searchCityByName(String name){
         String restRequest = apiAddress + "weather?q=" + name + "&APPID=" + appId;
-        JSONObject responseAsJson = requestJsonWithHttp(restRequest);
-        return new CityWeather(responseAsJson);
+        return requestStringWithHttp(restRequest);
     }
 
-    CityWeather getWeatherByCityNameAndCountry (String nameAndCountry){
+    String searchCityByNameAndCountry(String nameAndCountry){
         String restRequest = apiAddress + "weather?q=" + nameAndCountry + "&APPID=" + appId;
-        JSONObject responseAsJson = requestJsonWithHttp(restRequest);
-        return new CityWeather(responseAsJson);
+        return requestStringWithHttp(restRequest);
     }
 
-    private JSONObject requestJsonWithHttp(String restRequest){
+    private String requestStringWithHttp(String restRequest){
+        restRequest = restRequest.replaceAll("\\s", "%20"); //replace whitespaces with URI escape characters for SPACE
         HttpResponse httpResponse = executeHttpGetRequest(restRequest);
-        String responseString = httpResponseToString(httpResponse);
-        return new JSONObject(responseString);
+        return httpResponseToString(httpResponse);
     }
 
     private HttpResponse executeHttpGetRequest(String restRequest){
@@ -48,6 +45,7 @@ class OpenWeatherMapApi {
         try {
         HttpGet httpRequest = new HttpGet(restRequest);
         httpResponse = httpClient.execute(httpRequest);
+        latestStatusCode = httpResponse.getStatusLine().getStatusCode();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,5 +64,9 @@ class OpenWeatherMapApi {
             e.printStackTrace();
         }
         return stringBuilder.toString();
+    }
+
+    int getLatestStatusCode(){
+        return latestStatusCode;
     }
 }
